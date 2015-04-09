@@ -81,6 +81,8 @@ void FullBodyPlannerServer::init()
 
 bool FullBodyPlannerServer::getInput(Trajectory2D& trajectory2d)
 {
+    const int NUM_WAYPOINTS = 20;
+
     static vector<Trajectory2D> readed_trajectories;
     static vector<int> readed_indices;
     static bool initialized = false;
@@ -97,8 +99,8 @@ bool FullBodyPlannerServer::getInput(Trajectory2D& trajectory2d)
             while (trajectory_file >> waypoint)
             {
                 // TODO: for debug
-                //if (waypoint.agentID == 1)
-                  //  continue;
+                if (waypoint.agentID == 1)
+                    continue;
 
                 waypoint.x *= 0.5;
                 waypoint.y *= 0.5;
@@ -128,12 +130,25 @@ bool FullBodyPlannerServer::getInput(Trajectory2D& trajectory2d)
     if (readed_indices[current_agent] + 1 >= readed_trajectories[current_agent].size())
         return false;
 
-    trajectory2d.clear();
-    trajectory2d.assign(readed_trajectories[current_agent].begin() + readed_indices[current_agent],
-                        readed_trajectories[current_agent].begin() + readed_indices[current_agent] + 11);
-    ROS_INFO("Read %d trajectory %d - %d", current_agent, readed_indices[current_agent], readed_indices[current_agent] + 10);
+    trajectory2d.resize(NUM_WAYPOINTS + 1);
+    if (readed_indices[current_agent] + NUM_WAYPOINTS + 1 <= readed_trajectories[current_agent].size())
+    {
+        std::copy(readed_trajectories[current_agent].begin() + readed_indices[current_agent],
+                  readed_trajectories[current_agent].begin() + readed_indices[current_agent] + NUM_WAYPOINTS + 1,
+                  trajectory2d.begin());
+    }
+    else
+    {
+        std::copy(readed_trajectories[current_agent].begin() + readed_indices[current_agent],
+                  readed_trajectories[current_agent].end(),
+                  trajectory2d.begin());
+        for (int i = readed_indices[current_agent] + NUM_WAYPOINTS + 1 - readed_trajectories[current_agent].size(); i < NUM_WAYPOINTS + 1; ++i)
+            trajectory2d[i] = readed_trajectories[current_agent].back();
+    }
 
-    readed_indices[current_agent] += 10;
+    ROS_INFO("Read %d trajectory %d - %d", current_agent, readed_indices[current_agent], readed_indices[current_agent] + NUM_WAYPOINTS);
+
+    readed_indices[current_agent] += NUM_WAYPOINTS;
 
     current_agent = (current_agent + 1) % readed_trajectories.size();
 
