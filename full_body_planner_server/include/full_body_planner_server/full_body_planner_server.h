@@ -1,6 +1,7 @@
 #ifndef FULL_BODY_PLANNER_SERVER_H
 #define FULL_BODY_PLANNER_SERVER_H
 
+#include <moveit/robot_model_loader/robot_model_loader.h>
 #include <moveit_msgs/RobotTrajectory.h>
 #include <pluginlib/class_loader.h>
 #include <moveit/planning_interface/planning_interface.h>
@@ -56,6 +57,7 @@ protected:
     void setStandingState(robot_state::RobotState& state, Waypoint2D waypoint_2d);
 
     ros::NodeHandle node_handle_;
+    robot_model_loader::RobotModelLoaderPtr robot_model_loader_;
     robot_model::RobotModelPtr robot_model_;
     planning_scene::PlanningScenePtr planning_scene_;
     boost::shared_ptr<pluginlib::ClassLoader<planning_interface::PlannerManager> > planner_plugin_loader_;

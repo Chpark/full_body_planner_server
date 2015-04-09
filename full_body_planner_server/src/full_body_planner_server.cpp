@@ -1,6 +1,5 @@
 // Original code from pr2_moveit_tutorials::motion_planning_api_tutorial.cpp
 #include <ros/ros.h>
-#include <moveit/robot_model_loader/robot_model_loader.h>
 #include <moveit/planning_scene/planning_scene.h>
 #include <moveit/kinematic_constraints/utils.h>
 #include <moveit_msgs/DisplayTrajectory.h>
@@ -64,8 +63,8 @@ void FullBodyPlannerServer::init()
     vis_marker_array_publisher_ = node_handle_.advertise<visualization_msgs::MarkerArray>("visualization_marker_array", 100, true);
 
     // scene initialization
-    robot_model_loader::RobotModelLoader robot_model_loader("robot_description");
-    robot_model_ = robot_model_loader.getModel();
+    robot_model_loader_.reset(new robot_model_loader::RobotModelLoader("robot_description"));
+    robot_model_ = robot_model_loader_->getModel();
     planning_scene_.reset(new planning_scene::PlanningScene(robot_model_));
     planning_scene_diff_publisher_ = node_handle_.advertise<moveit_msgs::PlanningScene>("/planning_scene", 1);
     while (planning_scene_diff_publisher_.getNumSubscribers() < 1)
@@ -84,32 +83,57 @@ void FullBodyPlannerServer::init()
 
 bool FullBodyPlannerServer::getInput(Trajectory2D& trajectory2d)
 {
-    trajectory2d.clear();
-
-    // read from file
-    std::ifstream trajectory_file;
-    std::string file_name = "input.txt";
-
-    trajectory_file.open(file_name.c_str());
-    if (trajectory_file.is_open())
+    static vector<Trajectory2D> readed_trajectories;
+    static vector<int> readed_indices;
+    static bool initialized = false;
+    if (!initialized)
     {
-        Waypoint2D waypoint;
-        while (trajectory_file >> waypoint)
+        // read from file
+        std::ifstream trajectory_file;
+        std::string file_name = "input.txt";
+
+        trajectory_file.open(file_name.c_str());
+        if (trajectory_file.is_open())
         {
-            if (waypoint.agentID != 0)
-                continue;
+            Waypoint2D waypoint;
+            while (trajectory_file >> waypoint)
+            {
+                waypoint.x *= 0.5;
+                waypoint.y *= 0.5;
+                waypoint.vx *= 0.5;
+                waypoint.vy *= 0.5;
 
-            double norm = std::sqrt(waypoint.vx * waypoint.vx + waypoint.vy * waypoint.vy);
-            if (norm < 1e-7)
-                norm = 1e-7;
-            waypoint.orientation = std::atan2(waypoint.vy / norm, waypoint.vx / norm);
+                double norm = std::sqrt(waypoint.vx * waypoint.vx + waypoint.vy * waypoint.vy);
+                if (norm < 1e-7)
+                    norm = 1e-7;
+                waypoint.orientation = std::atan2(waypoint.vy / norm, waypoint.vx / norm) - M_PI_2;
+                if (waypoint.orientation < -M_PI)
+                    waypoint.orientation += 2.0 * M_PI;
 
-            trajectory2d.push_back(waypoint);
+                if (readed_trajectories.size() <= waypoint.agentID)
+                {
+                    readed_trajectories.resize(waypoint.agentID + 1);
+                    readed_indices.resize(waypoint.agentID + 1, 0);
+                }
 
-            if (trajectory2d.size() == 11)
-                break;
+                readed_trajectories[waypoint.agentID].push_back(waypoint);
+            }
         }
+        initialized = true;
     }
+    static int current_agent = 0;
+
+    if (readed_indices[current_agent] + 1 >= readed_trajectories[current_agent].size())
+        return false;
+
+    trajectory2d.clear();
+    trajectory2d.assign(readed_trajectories[current_agent].begin() + readed_indices[current_agent],
+                        readed_trajectories[current_agent].begin() + readed_indices[current_agent] + 11);
+    ROS_INFO("Read %d trajectory %d - %d", current_agent, readed_indices[current_agent], readed_indices[current_agent] + 10);
+
+    readed_indices[current_agent] += 10;
+
+    current_agent = (current_agent + 1) % readed_trajectories.size();
 
     return true;
 }
@@ -141,6 +165,7 @@ void FullBodyPlannerServer::terminate()
     planner_plugin_loader_.reset();
     planning_scene_.reset();
     robot_model_.reset();
+    robot_model_loader_.reset();
 }
 
 void FullBodyPlannerServer::loadPlanner()

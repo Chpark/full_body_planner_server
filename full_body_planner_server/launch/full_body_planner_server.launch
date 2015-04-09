@@ -15,7 +15,7 @@
 
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
 
-  <include file="$(find vincent_moveit_config)/launch/moveit_rviz.launch">
+  <include file="$(find full_body_planner_server)/launch/moveit_rviz.launch">
     <arg name="config" value="true"/>
     <arg name="debug" value="$(arg debug)"/>
   </include>
