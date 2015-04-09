@@ -22,6 +22,8 @@ using namespace std;
 namespace full_body_planner
 {
 
+const int NUM_WAYPOINTS = 20;
+
 ostream& operator<<(ostream& os, const Waypoint2D& waypoint)
 {
     os << waypoint.agentID << " " << waypoint.time << " " << waypoint.x << " " << waypoint.y << " " << waypoint.state << " " << waypoint.vx << " " << waypoint.vy << endl;
@@ -81,8 +83,6 @@ void FullBodyPlannerServer::init()
 
 bool FullBodyPlannerServer::getInput(Trajectory2D& trajectory2d)
 {
-    const int NUM_WAYPOINTS = 20;
-
     static vector<Trajectory2D> readed_trajectories;
     static vector<int> readed_indices;
     static bool initialized = false;
@@ -121,6 +121,9 @@ bool FullBodyPlannerServer::getInput(Trajectory2D& trajectory2d)
                 }
 
                 readed_trajectories[waypoint.agentID].push_back(waypoint);
+
+                if (agent_trajectory_count_.size() <= waypoint.agentID)
+                    agent_trajectory_count_.resize(waypoint.agentID + 1, 0);
             }
         }
         initialized = true;
@@ -149,6 +152,7 @@ bool FullBodyPlannerServer::getInput(Trajectory2D& trajectory2d)
     ROS_INFO("Read %d trajectory %d - %d", current_agent, readed_indices[current_agent], readed_indices[current_agent] + NUM_WAYPOINTS);
 
     readed_indices[current_agent] += NUM_WAYPOINTS;
+    ++agent_trajectory_count_[current_agent];
 
     current_agent = (current_agent + 1) % readed_trajectories.size();
 
@@ -158,6 +162,7 @@ bool FullBodyPlannerServer::getInput(Trajectory2D& trajectory2d)
 void FullBodyPlannerServer::compute3DTrajectory(Trajectory2D& trajectory2d)
 {
     node_handle_.setParam("/itomp_planner/agent_id", trajectory2d.front().agentID);
+    node_handle_.setParam("/itomp_planner/agent_trajectory_index", agent_trajectory_count_[trajectory2d.front().agentID] - 1);
 
     planning_interface::MotionPlanRequest req;
     planning_interface::MotionPlanResponse res;

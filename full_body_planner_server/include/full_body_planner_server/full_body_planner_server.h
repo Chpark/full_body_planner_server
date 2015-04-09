@@ -72,6 +72,7 @@ protected:
     std::vector<moveit_msgs::DisplayTrajectory> display_trajectories_;
 
     std::string group_name_;
+    std::vector<int> agent_trajectory_count_;
 };
 
 }
