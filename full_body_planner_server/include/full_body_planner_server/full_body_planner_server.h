@@ -14,14 +14,18 @@ namespace full_body_planner
 
 struct Waypoint2D
 {
-    int agentID;
-    double time;
+    int frame;
+    int agent_id;
+    double radius;
     double x;
     double y;
+    double orientation;
     int state;
+    double pvx;
+    double pvy;
     double vx;
     double vy;
-    double orientation;
+    std::vector<int> neighbors;
 
     friend std::ostream& operator<<(std::ostream& os, const Waypoint2D& waypoint);
     friend std::istream& operator>>(std::istream& is, Waypoint2D& waypoint);

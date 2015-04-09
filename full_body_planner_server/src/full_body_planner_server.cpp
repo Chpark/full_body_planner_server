@@ -26,15 +26,28 @@ const int NUM_WAYPOINTS = 20;
 
 ostream& operator<<(ostream& os, const Waypoint2D& waypoint)
 {
-    os << waypoint.agentID << " " << waypoint.time << " " << waypoint.x << " " << waypoint.y << " " << waypoint.state << " " << waypoint.vx << " " << waypoint.vy << endl;
+    double orientation = waypoint.orientation + M_PI_2;
+    if (orientation > M_PI)
+        orientation -= 2.0 * M_PI;
+
+    os << waypoint.frame << " " << waypoint.agent_id << " " << waypoint.radius << " "
+       << waypoint.x << " " << waypoint.y << " " << orientation << " " << waypoint.state << " "
+       << waypoint.pvx << " " << waypoint.pvy << " " << waypoint.vx << " " << waypoint.vy << std::endl;
+
     return os;
 }
 
 istream& operator>>(istream& is, Waypoint2D& waypoint)
 {
     double state;
-    is >> waypoint.agentID >> waypoint.time >> waypoint.x >> waypoint.y >> state >> waypoint.vx >> waypoint.vy;
+
+    is >> waypoint.frame >> waypoint.agent_id >> waypoint.radius >> waypoint.x >> waypoint.y >> waypoint.orientation >> state >> waypoint.pvx >> waypoint.pvy >> waypoint.vx >> waypoint.vy;
+
     waypoint.state = state;
+    waypoint.orientation -= M_PI_2;
+    if (waypoint.orientation <= -M_PI)
+        waypoint.orientation += 2.0 * M_PI;
+
     return is;
 }
 
@@ -90,7 +103,7 @@ bool FullBodyPlannerServer::getInput(Trajectory2D& trajectory2d)
     {
         // read from file
         std::ifstream trajectory_file;
-        std::string file_name = "input.txt";
+        std::string file_name = "new_input.txt";
 
         trajectory_file.open(file_name.c_str());
         if (trajectory_file.is_open())
@@ -99,31 +112,28 @@ bool FullBodyPlannerServer::getInput(Trajectory2D& trajectory2d)
             while (trajectory_file >> waypoint)
             {
                 // TODO: for debug
-                if (waypoint.agentID == 1)
-                    continue;
+                //if (waypoint.agent_id == 1)
+                  //  continue;
 
-                waypoint.x *= 0.5;
-                waypoint.y *= 0.5;
-                waypoint.vx *= 0.5;
-                waypoint.vy *= 0.5;
-
+                /*
                 double norm = std::sqrt(waypoint.vx * waypoint.vx + waypoint.vy * waypoint.vy);
                 if (norm < 1e-7)
                     norm = 1e-7;
                 waypoint.orientation = std::atan2(waypoint.vy / norm, waypoint.vx / norm) - M_PI_2;
                 if (waypoint.orientation < -M_PI)
                     waypoint.orientation += 2.0 * M_PI;
+                    */
 
-                if (readed_trajectories.size() <= waypoint.agentID)
+                if (readed_trajectories.size() <= waypoint.agent_id)
                 {
-                    readed_trajectories.resize(waypoint.agentID + 1);
-                    readed_indices.resize(waypoint.agentID + 1, 0);
+                    readed_trajectories.resize(waypoint.agent_id + 1);
+                    readed_indices.resize(waypoint.agent_id + 1, 0);
                 }
 
-                readed_trajectories[waypoint.agentID].push_back(waypoint);
+                readed_trajectories[waypoint.agent_id].push_back(waypoint);
 
-                if (agent_trajectory_count_.size() <= waypoint.agentID)
-                    agent_trajectory_count_.resize(waypoint.agentID + 1, 0);
+                if (agent_trajectory_count_.size() <= waypoint.agent_id)
+                    agent_trajectory_count_.resize(waypoint.agent_id + 1, 0);
             }
         }
         initialized = true;
@@ -161,8 +171,8 @@ bool FullBodyPlannerServer::getInput(Trajectory2D& trajectory2d)
 
 void FullBodyPlannerServer::compute3DTrajectory(Trajectory2D& trajectory2d)
 {
-    node_handle_.setParam("/itomp_planner/agent_id", trajectory2d.front().agentID);
-    node_handle_.setParam("/itomp_planner/agent_trajectory_index", agent_trajectory_count_[trajectory2d.front().agentID] - 1);
+    node_handle_.setParam("/itomp_planner/agent_id", trajectory2d.front().agent_id);
+    node_handle_.setParam("/itomp_planner/agent_trajectory_index", agent_trajectory_count_[trajectory2d.front().agent_id] - 1);
 
     planning_interface::MotionPlanRequest req;
     planning_interface::MotionPlanResponse res;
@@ -174,7 +184,7 @@ void FullBodyPlannerServer::compute3DTrajectory(Trajectory2D& trajectory2d)
 
     updateTrajectory2DFromPlanningResponse(trajectory2d, res);
 
-    displayTrajectory(trajectory2d.front().agentID, res);
+    displayTrajectory(trajectory2d.front().agent_id, res);
 }
 
 void FullBodyPlannerServer::sendResponse(const Trajectory2D& trajectory2d)
