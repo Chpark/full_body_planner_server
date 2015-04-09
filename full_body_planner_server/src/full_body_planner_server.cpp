@@ -2,7 +2,6 @@
 #include <ros/ros.h>
 #include <moveit/planning_scene/planning_scene.h>
 #include <moveit/kinematic_constraints/utils.h>
-#include <moveit_msgs/DisplayTrajectory.h>
 #include <moveit_msgs/DisplayRobotState.h>
 #include <moveit_msgs/PlanningScene.h>
 #include <moveit_msgs/PositionConstraint.h>
@@ -59,7 +58,6 @@ FullBodyPlannerServer::~FullBodyPlannerServer()
 
 void FullBodyPlannerServer::init()
 {
-    display_trajectory_publisher_ = node_handle_.advertise<moveit_msgs::DisplayTrajectory>("/move_group/display_planned_path", 1, true);
     vis_marker_array_publisher_ = node_handle_.advertise<visualization_msgs::MarkerArray>("visualization_marker_array", 100, true);
 
     // scene initialization
@@ -98,6 +96,10 @@ bool FullBodyPlannerServer::getInput(Trajectory2D& trajectory2d)
             Waypoint2D waypoint;
             while (trajectory_file >> waypoint)
             {
+                // TODO: for debug
+                //if (waypoint.agentID == 1)
+                  //  continue;
+
                 waypoint.x *= 0.5;
                 waypoint.y *= 0.5;
                 waypoint.vx *= 0.5;
@@ -140,6 +142,8 @@ bool FullBodyPlannerServer::getInput(Trajectory2D& trajectory2d)
 
 void FullBodyPlannerServer::compute3DTrajectory(Trajectory2D& trajectory2d)
 {
+    node_handle_.setParam("/itomp_planner/agent_id", trajectory2d.front().agentID);
+
     planning_interface::MotionPlanRequest req;
     planning_interface::MotionPlanResponse res;
 
@@ -150,7 +154,7 @@ void FullBodyPlannerServer::compute3DTrajectory(Trajectory2D& trajectory2d)
 
     updateTrajectory2DFromPlanningResponse(trajectory2d, res);
 
-    displayTrajectory(res);
+    displayTrajectory(trajectory2d.front().agentID, res);
 }
 
 void FullBodyPlannerServer::sendResponse(const Trajectory2D& trajectory2d)
@@ -305,14 +309,32 @@ void FullBodyPlannerServer::loadStaticScene()
     planning_scene_diff_publisher_.publish(planning_scene_msg);
 }
 
-void FullBodyPlannerServer::displayTrajectory(const planning_interface::MotionPlanResponse& res)
+void FullBodyPlannerServer::displayTrajectory(int index, const planning_interface::MotionPlanResponse& res)
 {
-    moveit_msgs::DisplayTrajectory display_trajectory;
     moveit_msgs::MotionPlanResponse response;
     res.getMessage(response);
-    display_trajectory.trajectory_start = response.trajectory_start;
-    display_trajectory.trajectory.push_back(response.trajectory);
-    display_trajectory_publisher_.publish(display_trajectory);
+
+    if (index >= display_trajectory_publishers_.size())
+    {
+        display_trajectory_publishers_.resize(index + 1);
+        display_trajectories_.resize(index + 1);
+
+        stringstream ss;
+        ss << "/move_group/display_planned_path_" << index;
+        display_trajectory_publishers_[index] = node_handle_.advertise<moveit_msgs::DisplayTrajectory>(ss.str(), 1, true);
+
+        display_trajectories_[index].trajectory_start = response.trajectory_start;
+        display_trajectories_[index].trajectory.push_back(response.trajectory);
+    }
+    else
+    {
+        moveit_msgs::RobotTrajectory trajectory = response.trajectory;
+        trajectory.joint_trajectory.points.erase(trajectory.joint_trajectory.points.begin());
+        display_trajectories_[index].trajectory.push_back(trajectory);
+    }
+
+
+    display_trajectory_publishers_[index].publish(display_trajectories_[index]);
 }
 
 void FullBodyPlannerServer::renderState(const robot_state::RobotState& state, const std::string& topic, const std_msgs::ColorRGBA& color)

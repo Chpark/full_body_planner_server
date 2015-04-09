@@ -3,6 +3,7 @@
 
 #include <moveit/robot_model_loader/robot_model_loader.h>
 #include <moveit_msgs/RobotTrajectory.h>
+#include <moveit_msgs/DisplayTrajectory.h>
 #include <pluginlib/class_loader.h>
 #include <moveit/planning_interface/planning_interface.h>
 #include <map>
@@ -49,7 +50,7 @@ protected:
     void plan(planning_interface::MotionPlanRequest& req, planning_interface::MotionPlanResponse& res);
     void updateTrajectory2DFromPlanningResponse(Trajectory2D& trajectory2d, const planning_interface::MotionPlanResponse& res);
 
-    void displayTrajectory(const planning_interface::MotionPlanResponse& res);
+    void displayTrajectory(int index, const planning_interface::MotionPlanResponse& res);
     void renderState(const robot_state::RobotState& state, const std::string& topic, const std_msgs::ColorRGBA& color);
     void drawPath(const Eigen::Vector3d& from, const Eigen::Vector3d& to, int id);
     void drawPosition(const Eigen::Vector3d& position, int id, const std_msgs::ColorRGBA& color);
@@ -65,9 +66,10 @@ protected:
 
     std_msgs::ColorRGBA color_start_, color_goal_;
     ros::Publisher planning_scene_diff_publisher_;
-    ros::Publisher display_trajectory_publisher_;
+    std::vector<ros::Publisher> display_trajectory_publishers_;
     ros::Publisher vis_marker_array_publisher_;
     std::map<std::string, ros::Publisher> state_display_publishers_;
+    std::vector<moveit_msgs::DisplayTrajectory> display_trajectories_;
 
     std::string group_name_;
 };
