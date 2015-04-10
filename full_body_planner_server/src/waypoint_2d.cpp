@@ -14,8 +14,10 @@ ostream& operator<<(ostream& os, const Waypoint2D& waypoint)
 
     os << waypoint.frame << " " << waypoint.agent_id << " " << waypoint.radius << " "
        << waypoint.x << " " << waypoint.y << " " << orientation << " " << waypoint.state << " "
-       << waypoint.pvx << " " << waypoint.pvy << " " << waypoint.vx << " " << waypoint.vy << " "
-       << waypoint.locked << " " << waypoint.failed << std::endl;
+       << waypoint.pvx << " " << waypoint.pvy << " " << waypoint.vx << " " << waypoint.vy << " [";
+    for (int i = 0; i < waypoint.neighbors.size(); ++i)
+        os << waypoint.neighbors[i] << " ";
+    os << "] " << waypoint.locked << " " << waypoint.failed << std::endl;
 
     return os;
 }

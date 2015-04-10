@@ -14,6 +14,8 @@ const int NUM_WAYPOINTS = 20;
 
 void readFile(unsigned int& numAgents, unsigned int& numFrames, unsigned int& agentSize)
 {
+    const int NUM_NEIGHBORS = 1;
+
     // read from file
     std::ifstream trajectory_file;
     std::string file_name = "new_input.txt";
@@ -29,13 +31,16 @@ void readFile(unsigned int& numAgents, unsigned int& numFrames, unsigned int& ag
                 readed_trajectories.resize(waypoint.agent_id + 1);
             }
 
+            waypoint.neighbors.resize(NUM_NEIGHBORS);
+            waypoint.neighbors[0] = (waypoint.agent_id == 0) ? 1 : 0;
+
             readed_trajectories[waypoint.agent_id].push_back(waypoint);
         }
     }
 
     numAgents = readed_trajectories.size();
     numFrames = NUM_WAYPOINTS + 1;
-    agentSize = 11; // TODO: neighbors
+    agentSize = 12 + NUM_NEIGHBORS;
 }
 
 bool getInput(vector<Trajectory2D>& trajectories)
@@ -138,6 +143,9 @@ int main()
                 agentData[frame * numAgents + agent][8] = waypoint.pvy;
                 agentData[frame * numAgents + agent][9] = waypoint.vx;
                 agentData[frame * numAgents + agent][10] = waypoint.vy;
+                agentData[frame * numAgents + agent][11] = waypoint.neighbors.size();
+                for (int neighbor = 0; neighbor < waypoint.neighbors.size(); ++neighbor)
+                    agentData[frame * numAgents + agent][12 + neighbor]  = waypoint.neighbors[neighbor];
 
                 cout << waypoint;
             }
