@@ -1,5 +1,5 @@
-*.txt~
-/bin/
 /build/
+/bin/
+*.txt~
 *.txt.user
 *.xml~

@@ -691,8 +691,28 @@ Visualization Manager:
         contact_39: true
         contact_4: true
         contact_40: true
+        contact_41: true
+        contact_42: true
+        contact_43: true
+        contact_44: true
+        contact_45: true
+        contact_46: true
+        contact_47: true
+        contact_48: true
+        contact_49: true
         contact_5: true
+        contact_50: true
+        contact_51: true
+        contact_52: true
+        contact_53: true
+        contact_54: true
+        contact_55: true
+        contact_56: true
+        contact_57: true
+        contact_58: true
+        contact_59: true
         contact_6: true
+        contact_60: true
         contact_7: true
         contact_8: true
         contact_9: true
@@ -721,15 +741,15 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/XYOrbit
-      Distance: 11.0725
+      Distance: 17.4975
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.907316
-        Y: -0.0907401
+        X: 4.21591
+        Y: -0.111965
         Z: -3.9493e-06
       Name: Current View
       Near Clip Distance: 0.01
@@ -753,4 +773,4 @@ Window Geometry:
     collapsed: false
   Width: 1855
   X: 1978
-  Y: 24
+  Y: 23

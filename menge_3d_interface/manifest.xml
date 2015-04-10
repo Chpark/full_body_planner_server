@@ -1,0 +1,19 @@
+<package>
+  <description brief="menge_3d_interface">
+
+     menge_3d_interface
+
+  </description>
+  <author>Chonhyon Park</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/menge_3d_interface</url>
+  <depend package="roscpp"/>
+
+  <export>
+    <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib"/>
+  </export>
+
+</package>
+
+

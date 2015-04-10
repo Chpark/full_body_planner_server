@@ -8,30 +8,11 @@
 #include <moveit/planning_interface/planning_interface.h>
 #include <map>
 #include <vector>
+#include <full_body_planner_server/waypoint_2d.h>
+#include <menge_3d_interface/3DInterfaceServer.h>
 
 namespace full_body_planner
 {
-
-struct Waypoint2D
-{
-    int frame;
-    int agent_id;
-    double radius;
-    double x;
-    double y;
-    double orientation;
-    int state;
-    double pvx;
-    double pvy;
-    double vx;
-    double vy;
-    std::vector<int> neighbors;
-
-    friend std::ostream& operator<<(std::ostream& os, const Waypoint2D& waypoint);
-    friend std::istream& operator>>(std::istream& is, Waypoint2D& waypoint);
-};
-
-typedef std::vector<Waypoint2D> Trajectory2D;
 
 class FullBodyPlannerServer
 {
@@ -42,13 +23,17 @@ public:
     void init();
     void terminate();
 
-    bool getInput(Trajectory2D& input);
-    void compute3DTrajectory(Trajectory2D& trajectory2d);
-    void sendResponse(const Trajectory2D& trajectory2d);
+    bool getInput(std::vector<Trajectory2D>& input);
+    bool compute3DTrajectory(Trajectory2D& trajectory2d);
+    void sendResponse(const std::vector<Trajectory2D>& trajectory2d, bool success);
 
 protected:
+    void initServer();
     void loadStaticScene();
     void loadPlanner();
+
+    float** getResponseMemory(int num_agents, int agent_size);
+    void deallocateResponseMemory();
 
     void setPlanningRequest(planning_interface::MotionPlanRequest& req, const Trajectory2D& trajectory2d);
     void plan(planning_interface::MotionPlanRequest& req, planning_interface::MotionPlanResponse& res);
@@ -75,8 +60,13 @@ protected:
     std::map<std::string, ros::Publisher> state_display_publishers_;
     std::vector<moveit_msgs::DisplayTrajectory> display_trajectories_;
 
+    Interface3D::Interface3DServer server_;
+
     std::string group_name_;
-    std::vector<int> agent_trajectory_count_;
+    int trajectory_count_;
+    float** response_data_;
+    int response_data_num_agents_;
+    int response_data_agent_size_;
 };
 
 }
