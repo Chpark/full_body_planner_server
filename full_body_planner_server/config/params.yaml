@@ -1,11 +1,11 @@
 num_trials: 1
 planning_time_limit: 120.0
-max_iterations: 200
+max_iterations: 2000
 max_iterations_after_collision_free: 0
 num_trajectories: 1
 
 smoothness_cost_weight: 0.000
-obstacle_cost_weight: 000.0
+obstacle_cost_weight: 1000.0
 torque_cost_weight: 0.0000
 state_validity_cost_weight: 0.0
 contact_invariant_cost_weight: 10.0
@@ -77,6 +77,9 @@ noise_decay: [0.999, 0.999, 0.999, 0.999, 0.999, 0.999, 0.999]
 num_contacts: 2
 contact_variable_initial_values: [0.2, 0.2, 0.2, 0.2]
 contact_variable_goal_values: [0.2, 0.2, 0.0, 0.0]
+
+workspace_min: [-1.0, -11.0, -1.5]
+workspace_max: [1.0, 11.0, 0.1]
 
 contact_points:
   left_foot_endeffector_link : [left_foot_cp_1_link, left_foot_cp_2_link, left_foot_cp_3_link, left_foot_cp_4_link]

@@ -12,13 +12,12 @@ static int readed_index = 0;
 
 const int NUM_WAYPOINTS = 20;
 
-void readFile(unsigned int& numAgents, unsigned int& numFrames, unsigned int& agentSize)
+void readFile(const std::string& file_name, unsigned int& numAgents, unsigned int& numFrames, unsigned int& agentSize)
 {
     const int NUM_NEIGHBORS = 1;
 
     // read from file
     std::ifstream trajectory_file;
-    std::string file_name = "new_input.txt";
 
     trajectory_file.open(file_name.c_str());
     if (trajectory_file.is_open())
@@ -77,8 +76,12 @@ bool getInput(vector<Trajectory2D>& trajectories)
     return true;
 }
 
-int main()
+int main(int argc, char **argv)
 {
+    std::string file_name = "new_input.txt";
+
+    if (argc > 1)
+        file_name = argv[1];
 
     //temp vars
     bool success, stepSuccess;
@@ -115,7 +118,7 @@ int main()
 
     std::cout << "Prepare an agent frame" <<std::endl;
 
-    readFile(numAgents, numFrames, agentSize);
+    readFile(file_name, numAgents, numFrames, agentSize);
 
     float **agentData = new float*[numAgents * numFrames];
     for (int agent = 0; agent < numAgents * numFrames; ++agent)
