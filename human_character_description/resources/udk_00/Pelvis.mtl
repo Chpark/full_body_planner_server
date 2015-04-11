@@ -1,0 +1,16 @@
+# 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
+# File Created: 11.03.2015 16:00:54
+
+newmtl Casual_Male_Lod_1
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.600000 0.600000 0.600000
+	Kd 1.000000 1.000000 1.000000
+	Ks 0.100000 0.100000 0.100000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka D:\crowd\boeing\3dBody\t-pose_10.fbm\Vincent_Hero_High_diffuse.png
+	map_Kd D:\crowd\boeing\3dBody\t-pose_10.fbm\Vincent_Hero_High_diffuse.png

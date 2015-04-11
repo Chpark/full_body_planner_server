@@ -1,0 +1,8 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: human_character_description
+    relative_path: robots/vincent_specula.urdf
+  SRDF:
+    relative_path: config/vincent.srdf
+  CONFIG:
+    generated_timestamp: 1428551861
