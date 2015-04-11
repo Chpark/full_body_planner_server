@@ -11,7 +11,7 @@ Panels:
         - /MarkerArray1/Namespaces1
         - /MarkerArray2
       Splitter Ratio: 0.417391
-    Tree Height: 837
+    Tree Height: 655
   - Class: rviz/Help
     Name: Help
   - Class: rviz/Views
@@ -335,7 +335,7 @@ Visualization Manager:
         Show Robot Collision: false
         Show Robot Visual: true
         Show Trail: false
-        State Display Time: REALTIME
+        State Display Time: 0.05 s
         Trajectory Topic: /itomp_planner/display_planned_path
       Planning Metrics:
         Payload: 1
@@ -726,6 +726,13 @@ Visualization Manager:
         {}
       Queue Size: 100
       Value: false
+    - Class: rviz/Axes
+      Enabled: true
+      Length: 1
+      Name: Axes
+      Radius: 0.1
+      Reference Frame: <Fixed Frame>
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -741,23 +748,57 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/XYOrbit
-      Distance: 17.4975
+      Distance: 5.65174
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 4.21591
-        Y: -0.111965
-        Z: -3.9493e-06
+        X: -0.133567
+        Y: -10.2168
+        Z: -6.26053e-06
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.684797
+      Pitch: 0.0847971
       Target Frame: root_link
       Value: XYOrbit (rviz)
-      Yaw: 6.26996
-    Saved: ~
+      Yaw: 0.321773
+    Saved:
+      - Class: rviz/XYOrbit
+        Distance: 4.50554
+        Enable Stereo Rendering:
+          Stereo Eye Separation: 0.06
+          Stereo Focal Distance: 1
+          Swap Stereo Eyes: false
+          Value: false
+        Focal Point:
+          X: 0.366762
+          Y: 9.65977
+          Z: -6.89842e-06
+        Name: Agent 2
+        Near Clip Distance: 0.01
+        Pitch: 0.774797
+        Target Frame: root_link
+        Value: XYOrbit (rviz)
+        Yaw: 2.34677
+      - Class: rviz/XYOrbit
+        Distance: 5.65174
+        Enable Stereo Rendering:
+          Stereo Eye Separation: 0.06
+          Stereo Focal Distance: 1
+          Swap Stereo Eyes: false
+          Value: false
+        Focal Point:
+          X: -1.68792
+          Y: -10.5887
+          Z: -6.26053e-06
+        Name: Agent 1
+        Near Clip Distance: 0.01
+        Pitch: 0.469797
+        Target Frame: root_link
+        Value: XYOrbit (rviz)
+        Yaw: 3.06677
 Window Geometry:
   Displays:
     collapsed: false
@@ -768,9 +809,9 @@ Window Geometry:
   Hide Right Dock: false
   Motion Planning:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd000000010000000000000241000003dafc0200000005fb000000100044006900730070006c0061007900730100000028000003da000000dd00fffffffb0000000800480065006c00700000000342000000bb0000007600fffffffb0000000a0056006900650077007300000003b0000000b0000000b000fffffffb0000000c00430061006d00650072006100000002ff000001610000000000000000fb0000001e004d006f00740069006f006e00200050006c0061006e006e0069006e006700000002830000017f0000017400ffffff000004f8000003da00000001000000020000000100000002fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd000000010000000000000241000003dafc0200000005fb000000100044006900730070006c006100790073010000002800000324000000dd00fffffffb0000000800480065006c00700000000342000000bb0000007600fffffffb0000000a005600690065007700730100000352000000b0000000b000fffffffb0000000c00430061006d00650072006100000002ff000001610000000000000000fb0000001e004d006f00740069006f006e00200050006c0061006e006e0069006e006700000002830000017f0000017400ffffff000004f8000003da00000001000000020000000100000002fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Views:
     collapsed: false
   Width: 1855
-  X: 1978
-  Y: 23
+  X: 1985
+  Y: 24
