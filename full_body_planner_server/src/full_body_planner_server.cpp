@@ -537,7 +537,7 @@ void FullBodyPlannerServer::deallocateResponseMemory()
 int main(int argc, char **argv)
 {
     // for debug
-    setbuf(stdout, NULL);
+    //setbuf(stdout, NULL);
 
     ros::init(argc, argv, "full_body_planner");
     ros::AsyncSpinner spinner(1);
