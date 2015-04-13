@@ -125,15 +125,17 @@ bool FullBodyPlannerServer::getInput(std::vector<Trajectory2D>& trajectories)
     return true;
 }
 
-bool FullBodyPlannerServer::compute3DTrajectory(Trajectory2D& trajectory2d)
+bool FullBodyPlannerServer::compute3DTrajectory(std::vector<Trajectory2D>& trajectories, int index)
 {
+    Trajectory2D& trajectory2d = trajectories[index];
+
     node_handle_.setParam("/itomp_planner/agent_id", trajectory2d.front().agent_id);
     node_handle_.setParam("/itomp_planner/agent_trajectory_index", trajectory_count_ - 1);
 
     planning_interface::MotionPlanRequest req;
     planning_interface::MotionPlanResponse res;
 
-    setPlanningRequest(req, trajectory2d);
+    setPlanningRequest(req, trajectories, index);
 
     // call planner
     bool success = plan(req, res);
@@ -247,8 +249,10 @@ void FullBodyPlannerServer::loadPlanner()
     }
 }
 
-void FullBodyPlannerServer::setPlanningRequest(planning_interface::MotionPlanRequest& req, const Trajectory2D& trajectory2d)
+void FullBodyPlannerServer::setPlanningRequest(planning_interface::MotionPlanRequest& req, const std::vector<Trajectory2D>& trajectories, int index)
 {
+    const Trajectory2D& trajectory2d = trajectories[index];
+
     robot_state::RobotState start_state = planning_scene_->getCurrentStateNonConst();
     robot_state::RobotState goal_state = start_state;
 
@@ -264,6 +268,46 @@ void FullBodyPlannerServer::setPlanningRequest(planning_interface::MotionPlanReq
 
     renderState(start_state, "/move_itomp/display_start_state", color_start_);
     renderState(goal_state, "/move_itomp/display_goal_state", color_goal_);
+
+    int max_neighbors = 0;
+    for (int i = 0; i < trajectory2d.size(); ++i)
+    {
+        if (trajectory2d[i].neighbors.size() > max_neighbors)
+            max_neighbors = trajectory2d[i].neighbors.size();
+    }
+
+    // set robot trajectories as constraints
+    req.trajectory_constraints.constraints.reserve(max_neighbors + 1);
+    for (int i = 0; i < max_neighbors + 1; ++i)
+    {
+        moveit_msgs::Constraints c;
+        c.position_constraints.reserve(trajectories[index].size());
+        for (int j = 0; j < trajectories[index].size(); ++j)
+        {
+            moveit_msgs::PositionConstraint pc;
+            if (i == 0)
+            {
+                pc.weight = index; // robot index
+                pc.target_point_offset.z = trajectories[index][j].radius; // is it ok?
+            }
+            else
+            {
+                int neighbor_id = -1;
+
+                if (trajectory2d[j].neighbors.size() >= i)
+                {
+                    neighbor_id = trajectory2d[j].neighbors[i - 1];
+                    pc.weight = neighbor_id;
+                    pc.target_point_offset.x = trajectories[neighbor_id][j].x;
+                    pc.target_point_offset.y = trajectories[neighbor_id][j].y;
+                    pc.target_point_offset.z = trajectories[neighbor_id][j].radius; // is it ok?
+                }
+            }
+            c.position_constraints.push_back(pc);
+        }
+
+        req.trajectory_constraints.constraints.push_back(c);
+    }
 }
 
 void FullBodyPlannerServer::updateTrajectory2DFromPlanningResponse(Trajectory2D& trajectory2d, const planning_interface::MotionPlanResponse& res)
@@ -562,7 +606,7 @@ int main(int argc, char **argv)
     {
         bool success = true;
         for (int i = 0; i < trajectories.size(); ++i)
-            success &= full_body_planner->compute3DTrajectory(trajectories[i]);
+            success &= full_body_planner->compute3DTrajectory(trajectories, i);
         full_body_planner->sendResponse(trajectories, success);
 
         if (!success)

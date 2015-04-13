@@ -24,7 +24,7 @@ public:
     void terminate();
 
     bool getInput(std::vector<Trajectory2D>& input);
-    bool compute3DTrajectory(Trajectory2D& trajectory2d);
+    bool compute3DTrajectory(std::vector<Trajectory2D>& trajectories, int index);
     void sendResponse(const std::vector<Trajectory2D>& trajectory2d, bool success);
 
     void decreaseTrajectoryCount();
@@ -37,7 +37,7 @@ protected:
     float** getResponseMemory(int num_agents, int agent_size);
     void deallocateResponseMemory();
 
-    void setPlanningRequest(planning_interface::MotionPlanRequest& req, const Trajectory2D& trajectory2d);
+    void setPlanningRequest(planning_interface::MotionPlanRequest& req, const std::vector<Trajectory2D>& trajectories, int index);
     bool plan(planning_interface::MotionPlanRequest& req, planning_interface::MotionPlanResponse& res);
     void updateTrajectory2DFromPlanningResponse(Trajectory2D& trajectory2d, const planning_interface::MotionPlanResponse& res);
 
