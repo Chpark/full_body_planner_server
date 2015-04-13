@@ -172,6 +172,7 @@ int main(int argc, char **argv)
         else
         {
             std::cout << "STEP FAIL: " <<std::endl;
+            readed_index -= NUM_WAYPOINTS;
         }
         for (unsigned int ragent = 0; ragent < numReplyAgents; ++ragent)
         {

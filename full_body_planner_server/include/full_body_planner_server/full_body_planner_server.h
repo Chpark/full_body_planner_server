@@ -27,6 +27,8 @@ public:
     bool compute3DTrajectory(Trajectory2D& trajectory2d);
     void sendResponse(const std::vector<Trajectory2D>& trajectory2d, bool success);
 
+    void decreaseTrajectoryCount();
+
 protected:
     void initServer();
     void loadStaticScene();
@@ -36,7 +38,7 @@ protected:
     void deallocateResponseMemory();
 
     void setPlanningRequest(planning_interface::MotionPlanRequest& req, const Trajectory2D& trajectory2d);
-    void plan(planning_interface::MotionPlanRequest& req, planning_interface::MotionPlanResponse& res);
+    bool plan(planning_interface::MotionPlanRequest& req, planning_interface::MotionPlanResponse& res);
     void updateTrajectory2DFromPlanningResponse(Trajectory2D& trajectory2d, const planning_interface::MotionPlanResponse& res);
 
     void displayTrajectory(int index, const planning_interface::MotionPlanResponse& res);
@@ -68,6 +70,11 @@ protected:
     int response_data_num_agents_;
     int response_data_agent_size_;
 };
+
+inline void FullBodyPlannerServer::decreaseTrajectoryCount()
+{
+    --trajectory_count_;
+}
 
 }
 

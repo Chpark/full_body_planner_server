@@ -136,13 +136,14 @@ bool FullBodyPlannerServer::compute3DTrajectory(Trajectory2D& trajectory2d)
     setPlanningRequest(req, trajectory2d);
 
     // call planner
-    plan(req, res);
+    bool success = plan(req, res);
 
     updateTrajectory2DFromPlanningResponse(trajectory2d, res);
 
-    displayTrajectory(trajectory2d.front().agent_id, res);
+    if (success)
+        displayTrajectory(trajectory2d.front().agent_id, res);
 
-    return true;
+    return success;
 }
 
 void FullBodyPlannerServer::sendResponse(const std::vector<Trajectory2D>& trajectories, bool success)
@@ -267,15 +268,18 @@ void FullBodyPlannerServer::setPlanningRequest(planning_interface::MotionPlanReq
 
 void FullBodyPlannerServer::updateTrajectory2DFromPlanningResponse(Trajectory2D& trajectory2d, const planning_interface::MotionPlanResponse& res)
 {
-    trajectory2d.back().x = res.trajectory_->getLastWayPoint().getVariablePosition("base_prismatic_joint_x");
-    trajectory2d.back().y = res.trajectory_->getLastWayPoint().getVariablePosition("base_prismatic_joint_y");
-    trajectory2d.back().orientation = res.trajectory_->getLastWayPoint().getVariablePosition("base_revolute_joint_z");
-
-    trajectory2d.back().locked = 0;
     trajectory2d.back().failed = (res.error_code_.val == moveit_msgs::MoveItErrorCodes::SUCCESS) ? 0 : 1;
+    trajectory2d.back().locked = 0;
+
+    if (!trajectory2d.back().failed)
+    {
+        trajectory2d.back().x = res.trajectory_->getLastWayPoint().getVariablePosition("base_prismatic_joint_x");
+        trajectory2d.back().y = res.trajectory_->getLastWayPoint().getVariablePosition("base_prismatic_joint_y");
+        trajectory2d.back().orientation = res.trajectory_->getLastWayPoint().getVariablePosition("base_revolute_joint_z");
+    }
 }
 
-void FullBodyPlannerServer::plan(planning_interface::MotionPlanRequest& req, planning_interface::MotionPlanResponse& res)
+bool FullBodyPlannerServer::plan(planning_interface::MotionPlanRequest& req, planning_interface::MotionPlanResponse& res)
 {
     req.group_name = group_name_;
     req.allowed_planning_time = 300.0;
@@ -283,12 +287,15 @@ void FullBodyPlannerServer::plan(planning_interface::MotionPlanRequest& req, pla
 
     planning_interface::PlanningContextPtr context = planner_instance_->getPlanningContext(planning_scene_, req, res.error_code_);
 
-    context->solve(res);
+    if (context->solve(res) == false)
+        return false;
+
     if (res.error_code_.val != res.error_code_.SUCCESS)
     {
         ROS_ERROR("Could not compute plan successfully");
-        return;
+        return false;
     }
+    return true;
 }
 
 void FullBodyPlannerServer::loadStaticScene()
@@ -557,6 +564,9 @@ int main(int argc, char **argv)
         for (int i = 0; i < trajectories.size(); ++i)
             success &= full_body_planner->compute3DTrajectory(trajectories[i]);
         full_body_planner->sendResponse(trajectories, success);
+
+        if (!success)
+            full_body_planner->decreaseTrajectoryCount();
     }
 
     full_body_planner->terminate();
