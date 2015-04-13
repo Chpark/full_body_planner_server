@@ -145,6 +145,8 @@ bool FullBodyPlannerServer::compute3DTrajectory(std::vector<Trajectory2D>& traje
     if (success)
         displayTrajectory(trajectory2d.front().agent_id, res);
 
+    ROS_INFO("Planning of agent %d trajectory %d : %s", trajectory2d.front().agent_id, trajectory_count_ - 1, (success ? "Success" : "Fail"));
+
     return success;
 }
 
