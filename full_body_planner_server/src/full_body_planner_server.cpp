@@ -97,6 +97,7 @@ bool FullBodyPlannerServer::getInput(std::vector<Trajectory2D>& trajectories)
                 {
                     Waypoint2D& waypoint = trajectories[agent][frame];
 
+                    /*
                     waypoint.frame = agentData[frame * numAgents + agent][0];
                     waypoint.agent_id = agentData[frame * numAgents + agent][1];
                     waypoint.radius = agentData[frame * numAgents + agent][2];
@@ -109,6 +110,21 @@ bool FullBodyPlannerServer::getInput(std::vector<Trajectory2D>& trajectories)
                     waypoint.vx = agentData[frame * numAgents + agent][9];
                     waypoint.vy = agentData[frame * numAgents + agent][10];
                     waypoint.neighbors.resize(agentData[frame * numAgents + agent][11]);
+                    */
+
+                    waypoint.frame = agentData[frame * numAgents + agent][0];
+                    waypoint.agent_id = agentData[frame * numAgents + agent][1];
+                    waypoint.state = agentData[frame * numAgents + agent][2];
+                    waypoint.x = agentData[frame * numAgents + agent][3];
+                    waypoint.y = agentData[frame * numAgents + agent][4];
+                    waypoint.vx = agentData[frame * numAgents + agent][5];
+                    waypoint.vy = agentData[frame * numAgents + agent][6];
+                    waypoint.pvx = agentData[frame * numAgents + agent][7];
+                    waypoint.pvy = agentData[frame * numAgents + agent][8];
+                    waypoint.orientation = agentData[frame * numAgents + agent][9];
+                    waypoint.radius = agentData[frame * numAgents + agent][10];
+                    waypoint.neighbors.resize(agentData[frame * numAgents + agent][11]);
+
                     for (unsigned int neighbor = 0; neighbor < waypoint.neighbors.size(); ++neighbor)
                         waypoint.neighbors[neighbor] = agentData[frame * numAgents + agent][12 + neighbor];
 

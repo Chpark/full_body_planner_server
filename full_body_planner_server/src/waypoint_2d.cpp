@@ -12,9 +12,18 @@ ostream& operator<<(ostream& os, const Waypoint2D& waypoint)
     if (orientation > M_PI)
         orientation -= 2.0 * M_PI;
 
-    os << waypoint.frame << " " << waypoint.agent_id << " " << waypoint.radius << " "
-       << waypoint.x << " " << waypoint.y << " " << orientation << " " << waypoint.state << " "
-       << waypoint.pvx << " " << waypoint.pvy << " " << waypoint.vx << " " << waypoint.vy << " [";
+    os << waypoint.frame << " "
+       << waypoint.agent_id << " "
+       << waypoint.state << " "
+       << waypoint.x << " "
+       << waypoint.y << " "
+       << waypoint.vx << " "
+       << waypoint.vy << " "
+       << waypoint.pvx << " "
+       << waypoint.pvy << " "
+       << orientation << " "
+       << waypoint.radius << " [";
+
     for (int i = 0; i < waypoint.neighbors.size(); ++i)
         os << waypoint.neighbors[i] << " ";
     os << "] " << waypoint.locked << " " << waypoint.failed << std::endl;
@@ -25,8 +34,24 @@ ostream& operator<<(ostream& os, const Waypoint2D& waypoint)
 istream& operator>>(istream& is, Waypoint2D& waypoint)
 {
     double state;
+    int num_neighbors;
 
-    is >> waypoint.frame >> waypoint.agent_id >> waypoint.radius >> waypoint.x >> waypoint.y >> waypoint.orientation >> state >> waypoint.pvx >> waypoint.pvy >> waypoint.vx >> waypoint.vy;
+    is >> waypoint.frame
+       >> waypoint.agent_id
+       >> state
+       >> waypoint.x
+       >> waypoint.y
+       >> waypoint.vx
+       >> waypoint.vy
+       >> waypoint.pvx
+       >> waypoint.pvy
+       >> waypoint.orientation
+       >> waypoint.radius
+       >> num_neighbors;
+
+    waypoint.neighbors.resize(num_neighbors);
+    for (int i = 0; i < waypoint.neighbors.size(); ++i)
+        is >> waypoint.neighbors[i];
 
     waypoint.state = state;
     waypoint.orientation -= M_PI_2;
