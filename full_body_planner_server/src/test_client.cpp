@@ -83,6 +83,9 @@ int main(int argc, char **argv)
     if (argc > 1)
         file_name = argv[1];
 
+    if (argc > 2)
+        readed_index = std::atoi(argv[2]);
+
     //temp vars
     bool success, stepSuccess;
     unsigned int messageType, numAgents, numFrames, numReplyAgents, agentSize, replyAgentSize;
@@ -137,15 +140,15 @@ int main(int argc, char **argv)
                 Waypoint2D& waypoint = trajectories[agent][frame];
                 agentData[frame * numAgents + agent][0] = waypoint.frame;
                 agentData[frame * numAgents + agent][1] = waypoint.agent_id;
-                agentData[frame * numAgents + agent][2] = waypoint.radius;
+                agentData[frame * numAgents + agent][2] = waypoint.state;
                 agentData[frame * numAgents + agent][3] = waypoint.x;
                 agentData[frame * numAgents + agent][4] = waypoint.y;
-                agentData[frame * numAgents + agent][5] = waypoint.orientation;
-                agentData[frame * numAgents + agent][6] = waypoint.state;
+                agentData[frame * numAgents + agent][5] = waypoint.vx;
+                agentData[frame * numAgents + agent][6] = waypoint.vy;
                 agentData[frame * numAgents + agent][7] = waypoint.pvx;
                 agentData[frame * numAgents + agent][8] = waypoint.pvy;
-                agentData[frame * numAgents + agent][9] = waypoint.vx;
-                agentData[frame * numAgents + agent][10] = waypoint.vy;
+                agentData[frame * numAgents + agent][9] = waypoint.orientation;
+                agentData[frame * numAgents + agent][10] = waypoint.radius;
                 agentData[frame * numAgents + agent][11] = waypoint.neighbors.size();
                 for (int neighbor = 0; neighbor < waypoint.neighbors.size(); ++neighbor)
                     agentData[frame * numAgents + agent][12 + neighbor]  = waypoint.neighbors[neighbor];
