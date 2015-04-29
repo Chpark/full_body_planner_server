@@ -727,12 +727,12 @@ Visualization Manager:
       Queue Size: 100
       Value: false
     - Class: rviz/Axes
-      Enabled: true
+      Enabled: false
       Length: 1
       Name: Axes
       Radius: 0.1
       Reference Frame: <Fixed Frame>
-      Value: true
+      Value: false
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -748,22 +748,22 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/XYOrbit
-      Distance: 5.65174
+      Distance: 8.32934
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.133567
-        Y: -10.2168
+        X: -0.862723
+        Y: 1.18192
         Z: -6.26053e-06
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.0847971
+      Pitch: 0.359797
       Target Frame: root_link
       Value: XYOrbit (rviz)
-      Yaw: 0.321773
+      Yaw: 5.67496
     Saved:
       - Class: rviz/XYOrbit
         Distance: 4.50554
@@ -813,5 +813,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1855
-  X: 1985
+  X: 1978
   Y: 24

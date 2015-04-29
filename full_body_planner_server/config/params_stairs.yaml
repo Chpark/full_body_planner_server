@@ -1,11 +1,11 @@
 num_trials: 1
 planning_time_limit: 120.0
-max_iterations: 300
+max_iterations: 2000
 max_iterations_after_collision_free: 0
 num_trajectories: 1
 
 smoothness_cost_weight: 0.000
-obstacle_cost_weight: 100.0
+obstacle_cost_weight: 00.0
 torque_cost_weight: 0.0000
 state_validity_cost_weight: 0.0
 contact_invariant_cost_weight: 10.0
@@ -18,7 +18,7 @@ FTR_cost_weight: 0.000
 ROM_cost_weight: 0.0
 cartesian_trajectory_cost_weight: 0.0
 singularity_cost_weight: 0.0
-friction_cone_cost_weight: 00.000
+friction_cone_cost_weight: 100.000
 smoothness_cost_velocity: 0.0
 smoothness_cost_acceleration: 1.0
 smoothness_cost_jerk: 0.0
@@ -26,7 +26,7 @@ ridge_factor: 0.0
 
 temp: [20.0, 1000.0, 0.0]
 
-print_planning_info: true
+print_planning_info: false
 
 animate_path: true
 animate_endeffector: true
@@ -41,7 +41,7 @@ group_endeffectors:
   unified_body: right_hand_endeffector_link
 trajectory_duration: 15.0
 trajectory_discretization: 0.25
-keyframe_duration: 1.0
+keyframe_duration: 0.5
 friction_coefficient: 2.0
 lower_body_root: pelvis_link
 planning_step_size: 5.0
@@ -78,8 +78,8 @@ num_contacts: 2
 contact_variable_initial_values: [0.2, 0.2, 0.2, 0.2]
 contact_variable_goal_values: [0.2, 0.2, 0.0, 0.0]
 
-workspace_min: [-11.0, -11.0, -10.0]
-workspace_max: [11.0, 11.0, 10.0]
+workspace_min: [-1.0, -11.0, -1.5]
+workspace_max: [1.0, 11.0, 1.5]
 
 contact_points:
   left_foot_endeffector_link : [left_foot_cp_1_link, left_foot_cp_2_link, left_foot_cp_3_link, left_foot_cp_4_link]
@@ -87,14 +87,11 @@ contact_points:
   left_hand_endeffector_link : [left_hand_cp_1_link, left_hand_cp_2_link, left_hand_cp_3_link, left_hand_cp_4_link]
   right_hand_endeffector_link : [right_hand_cp_1_link, right_hand_cp_2_link, right_hand_cp_3_link, right_hand_cp_4_link]
 
-environment_model: package://full_body_planner_server/meshes/stairsObstacle.obj
+environment_model: package://full_body_planner_server/meshes/StairsScene/Stairs_Maya_Compressed.obj
 environment_model_position: [0.0, 0.0, 0.0]
 environment_model_scale: 1.0
 
-contact_model: package://full_body_planner_server/meshes/StairContacts.obj
+contact_model: package://full_body_planner_server/meshes/StairsScene/Stairs_Maya_Contacts_Compressed.obj
 contact_model_position: [0.0, 0.0, 0.0]
 contact_model_scale: 1.0
-
-ci_evaluation_on_points : false
-use_default_contact_ground : false
-
+use_default_contact_ground: false
