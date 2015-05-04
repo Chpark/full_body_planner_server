@@ -148,6 +148,20 @@ bool FullBodyPlannerServer::compute3DTrajectory(std::vector<Trajectory2D>& traje
     node_handle_.setParam("/itomp_planner/agent_id", trajectory2d.front().agent_id);
     node_handle_.setParam("/itomp_planner/agent_trajectory_index", trajectory_count_ - 1);
 
+    node_handle_.setParam("/itomp_planner/agent_vel_x_0", trajectory2d.front().vx);
+    node_handle_.setParam("/itomp_planner/agent_vel_y_0", trajectory2d.front().vy);
+    node_handle_.setParam("/itomp_planner/agent_vel_x_10", trajectory2d[trajectory2d.size() / 2].vx);
+    node_handle_.setParam("/itomp_planner/agent_vel_y_10", trajectory2d[trajectory2d.size() / 2].vy);
+    node_handle_.setParam("/itomp_planner/agent_vel_x_20", trajectory2d.back().vx);
+    node_handle_.setParam("/itomp_planner/agent_vel_y_20", trajectory2d.back().vy);
+
+    node_handle_.setParam("/itomp_planner/agent_pref_vel_x_0", trajectory2d.front().pvx);
+    node_handle_.setParam("/itomp_planner/agent_pref_vel_y_0", trajectory2d.front().pvy);
+    node_handle_.setParam("/itomp_planner/agent_pref_vel_x_10", trajectory2d[trajectory2d.size() / 2].pvx);
+    node_handle_.setParam("/itomp_planner/agent_pref_vel_y_10", trajectory2d[trajectory2d.size() / 2].pvy);
+    node_handle_.setParam("/itomp_planner/agent_pref_vel_x_20", trajectory2d.back().pvx);
+    node_handle_.setParam("/itomp_planner/agent_pref_vel_y_20", trajectory2d.back().pvy);
+
     planning_interface::MotionPlanRequest req;
     planning_interface::MotionPlanResponse res;
 
