@@ -441,7 +441,11 @@ void FullBodyPlannerServer::displayTrajectory(int index, const planning_interfac
     {
         display_trajectory_publishers_.resize(index + 1);
         display_trajectories_.resize(index + 1);
+    }
 
+    void* pub = display_trajectory_publishers_[index];
+    if (!pub)
+    {
         stringstream ss;
         ss << "/move_group/display_planned_path_" << index;
         display_trajectory_publishers_[index] = node_handle_.advertise<moveit_msgs::DisplayTrajectory>(ss.str(), 1, true);
@@ -455,7 +459,6 @@ void FullBodyPlannerServer::displayTrajectory(int index, const planning_interfac
         trajectory.joint_trajectory.points.erase(trajectory.joint_trajectory.points.begin());
         display_trajectories_[index].trajectory.push_back(trajectory);
     }
-
 
     display_trajectory_publishers_[index].publish(display_trajectories_[index]);
 }
