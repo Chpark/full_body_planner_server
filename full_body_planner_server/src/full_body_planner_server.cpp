@@ -446,9 +446,16 @@ void FullBodyPlannerServer::displayTrajectory(int index, const planning_interfac
     void* pub = display_trajectory_publishers_[index];
     if (!pub)
     {
-        stringstream ss;
-        ss << "/move_group/display_planned_path_" << index;
-        display_trajectory_publishers_[index] = node_handle_.advertise<moveit_msgs::DisplayTrajectory>(ss.str(), 1, true);
+        while (!pub)
+        {
+            stringstream ss;
+            ss << "/move_group/display_planned_path_" << index;
+            display_trajectory_publishers_[index] = node_handle_.advertise<moveit_msgs::DisplayTrajectory>(ss.str(), 1, true);
+
+            pub = display_trajectory_publishers_[index];
+
+            ROS_INFO("Reinitialize display trajectory publisher %d", index);
+        }
 
         display_trajectories_[index].trajectory_start = response.trajectory_start;
         display_trajectories_[index].trajectory.push_back(response.trajectory);
