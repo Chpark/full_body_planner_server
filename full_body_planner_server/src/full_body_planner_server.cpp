@@ -175,6 +175,9 @@ bool FullBodyPlannerServer::compute3DTrajectory(std::vector<Trajectory2D>& traje
     if (success)
         displayTrajectory(trajectory2d.front().agent_id, res);
 
+    if (trajectory2d.front().agent_id == 2 && trajectory_count_ - 1 == 12)
+        ROS_INFO("crash point");
+
     ROS_INFO("Planning of agent %d trajectory %d : %s", trajectory2d.front().agent_id, trajectory_count_ - 1, (success ? "Success" : "Fail"));
 
     return success;
@@ -363,10 +366,7 @@ bool FullBodyPlannerServer::plan(planning_interface::MotionPlanRequest& req, pla
 
     planning_interface::PlanningContextPtr context = planner_instance_->getPlanningContext(planning_scene_, req, res.error_code_);
 
-    if (context->solve(res) == false)
-        return false;
-
-    if (res.error_code_.val != res.error_code_.SUCCESS)
+    if (context->solve(res) == false || res.error_code_.val != res.error_code_.SUCCESS)
     {
         ROS_ERROR("Could not compute plan successfully");
         return false;
