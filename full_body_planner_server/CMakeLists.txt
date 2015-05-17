@@ -55,3 +55,8 @@ ${MOVE_ITOMP_HEADER_FILES}
 target_link_libraries(test_client menge_3d_interface)
 target_link_libraries(test_client ${ZMQ_LIB})
 
+rosbuild_add_executable(play_trajectory
+src/play_trajectory.cpp
+${MOVE_ITOMP_HEADER_FILES}
+)
+
