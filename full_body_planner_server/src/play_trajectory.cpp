@@ -427,7 +427,7 @@ void writeTransforms(std::vector<robot_state::RobotState>& robot_states)
     trajectory_file2.close();
 }
 
-void writeUnrealInput(std::vector<robot_state::RobotState>& robot_states)
+void writeUnrealInput(std::vector<robot_state::RobotState>& robot_states, int agent_index)
 {
     std::vector<std::pair<std::string, std::string> > link_names;
     link_names.push_back(std::make_pair<std::string, std::string>("pelvis_link", ""));
@@ -448,8 +448,10 @@ void writeUnrealInput(std::vector<robot_state::RobotState>& robot_states)
     link_names.push_back(std::make_pair<std::string, std::string>("lower_right_leg_link", "upper_right_leg_x_link"));
     link_names.push_back(std::make_pair<std::string, std::string>("right_foot_x_link", "lower_right_leg_link"));
 
+    std::stringstream ss;
+    ss << "ue4_transforms_" << agent_index << ".txt";
     std::ofstream trajectory_file;
-    trajectory_file.open("ue4_transforms.txt");
+    trajectory_file.open(ss.str().c_str());
     trajectory_file.precision(std::numeric_limits<double>::digits10);
 
     for (int j = 0; j < link_names.size(); ++j)
@@ -548,7 +550,7 @@ int main(int argc, char **argv)
 
     // write transforms
     //writeTransforms(robot_states);
-    writeUnrealInput(robot_states);
+    writeUnrealInput(robot_states, agent);
 
 
 
